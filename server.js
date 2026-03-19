@@ -2,7 +2,7 @@ const express = require('express')
 const app = express()
 const port = 3000
 
-const apiPrefix = 'api/';
+const apiPrefix = '/api/';
 
 app.get(apiPrefix + 'getSampleData', (req, res) => {
   const respone = {
