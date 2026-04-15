@@ -1,7 +1,7 @@
 CREATE DATABASE IF NOT EXISTS nutripaw;
 USE nutripaw;
 
-CREATE TABLE users (
+CREATE TABLE IF NOT EXISTS users (
 user_id INT AUTO_INCREMENT PRIMARY KEY,
 name VARCHAR(100) NOT NULL,
 email VARCHAR(150) NOT NULL UNIQUE,
@@ -9,7 +9,7 @@ password_hash VARCHAR(255) NOT NULL,
 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE TABLE pets (
+CREATE TABLE IF NOT EXISTS pets (
 pet_id INT AUTO_INCREMENT PRIMARY KEY,
 owner_id INT NOT NULL,
 name VARCHAR(100) NOT NULL,
@@ -24,7 +24,7 @@ ON DELETE CASCADE
 ON UPDATE CASCADE
 );
 
-CREATE TABLE food_entries (
+CREATE TABLE IF NOT EXISTS food_entries (
 food_entry_id INT AUTO_INCREMENT PRIMARY KEY,
 pet_id INT NOT NULL,
 food_type VARCHAR(100) NOT NULL,
@@ -38,7 +38,7 @@ ON DELETE CASCADE
 ON UPDATE CASCADE
 );
 
-CREATE TABLE medications (
+CREATE TABLE IF NOT EXISTS medications (
 medication_id INT AUTO_INCREMENT PRIMARY KEY,
 pet_id INT NOT NULL,
 medication_name VARCHAR(100) NOT NULL,
@@ -52,3 +52,9 @@ FOREIGN KEY (pet_id) REFERENCES pets(pet_id)
 ON DELETE CASCADE
 ON UPDATE CASCADE
 );
+INSERT INTO users (name, email, password_hash)
+VALUES ('Max Mustermann', 'max@example.com', 'hashedpassword123');
+
+SELECT * FROM users;
+
+DELETE FROM users;
