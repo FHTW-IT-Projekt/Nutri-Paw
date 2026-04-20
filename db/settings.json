@@ -1,0 +1,29 @@
+{
+  "sqltools.connections": [
+    {
+      "server": "localhost",
+      "port": 3306,
+      "driver": "MySQL",
+      "name": "nutripaw-local",
+      "username": "root",
+      "database": "mysql",
+      "password": "",
+      "previewLimit": 50
+    },
+    {
+      "mysqlOptions": {
+        "authProtocol": "default",
+        "enableSsl": "Disabled"
+      },
+      "ssh": "Disabled",
+      "previewLimit": 50,
+      "server": "localhost",
+      "port": 3306,
+      "driver": "MySQL",
+      "name": "nutri-paw",
+      "database": "mysql",
+      "username": "root",
+      "password": ""
+    }
+  ]
+}
