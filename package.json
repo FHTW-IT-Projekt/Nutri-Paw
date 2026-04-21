@@ -1,6 +1,7 @@
 {
   "name": "nutripaw",
   "version": "1.0.0",
+  "type": "module",
   "description": "Track your pets diet.",
   "license": "ISC",
   "author": "",
