@@ -10,19 +10,24 @@ created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE TABLE IF NOT EXISTS pets (
-pet_id INT AUTO_INCREMENT PRIMARY KEY,
-owner_id INT NOT NULL,
-name VARCHAR(100) NOT NULL,
-species VARCHAR(50) NOT NULL,
-breed VARCHAR(100),
-age INT,
-gender VARCHAR(20),
-created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-CONSTRAINT fk_pet_owner
-FOREIGN KEY (owner_id) REFERENCES users(user_id)
-ON DELETE CASCADE
-ON UPDATE CASCADE
+  pet_id INT AUTO_INCREMENT PRIMARY KEY,
+  owner_id INT NOT NULL,
+  name VARCHAR(100) NOT NULL,
+  species VARCHAR(50) NOT NULL,
+  race VARCHAR(100),       -- Von 'breed' zu 'race' umbenannt (passend zur HTML ID)
+  colour VARCHAR(50),      -- NEU: Farbe hinzugefügt
+  age INT,
+  gender VARCHAR(20),      -- Behalten wir, schadet nicht
+  diagnosis VARCHAR(255),  -- NEU: Diagnose als Text
+  medication VARCHAR(255), -- NEU: Medikation als einfacher Text, wie vom Frontend erwartet
+  behaviour VARCHAR(255),  -- NEU: Verhalten hinzugefügt
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  CONSTRAINT fk_pet_owner
+    FOREIGN KEY (owner_id) REFERENCES users(user_id)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE
 );
+
 
 CREATE TABLE IF NOT EXISTS food_entries (
 food_entry_id INT AUTO_INCREMENT PRIMARY KEY,
