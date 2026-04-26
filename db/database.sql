@@ -52,6 +52,18 @@ FOREIGN KEY (pet_id) REFERENCES pets(pet_id)
 ON DELETE CASCADE
 ON UPDATE CASCADE
 );
+
+CREATE TABLE IF NOT EXISTS feeding_events (
+event_id INT AUTO_INCREMENT PRIMARY KEY,
+pet_id INT NOT NULL,
+task_id VARCHAR(50),
+schedule_time VARCHAR(20),
+fed_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+CONSTRAINT fk_feeding_event_pet
+FOREIGN KEY (pet_id) REFERENCES pets(pet_id)
+ON DELETE CASCADE
+ON UPDATE CASCADE
+);
 INSERT INTO users (name, email, password_hash)
 VALUES ('Max Mustermann', 'max@example.com', 'hashedpassword123');
 
