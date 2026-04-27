@@ -1,3 +1,4 @@
+
 import express from 'express';
 import cors from 'cors';
 //einbinden der "Router-Dateien"
@@ -16,5 +17,5 @@ app.use(express.json()); // damit frontend daten an backedn sende kann
 app.use(apiPrefix + 'pets', petRoutes);
 
 app.listen(port, () => {
-  console.log(`Nutripaw app listening on port ${port}`)
-})
+    console.log(`Nutripaw app listening on port ${port}`);
+});
