@@ -3,6 +3,7 @@ import express from 'express';
 import cors from 'cors';
 //einbinden der "Router-Dateien"
 import petRoutes from './routes/pet.js';
+import userPetsRouter from "./routes/user.js";
 
 const app = express();
 const port = 3000;
@@ -15,6 +16,7 @@ app.use(express.json()); // damit frontend daten an backedn sende kann
 
 
 app.use(apiPrefix + 'pets', petRoutes);
+app.use("/api/users", userPetsRouter); 
 
 app.listen(port, () => {
     console.log(`Nutripaw app listening on port ${port}`);
