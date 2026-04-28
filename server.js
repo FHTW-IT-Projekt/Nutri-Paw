@@ -11,16 +11,13 @@ const apiPrefix = '/api/'; // nur zur Trennung für frontend und Backend, damit 
 
 app.use(cors());
 app.use(express.json()); // damit frontend daten an backedn sende kann
-// wandelt rohdaten in java script objekt um und speichert fsd objrkt in req.body 
+// wandelt rohdaten in java script objekt um und speichert fsd objekt in req.body 
 
 
-<<<<<<< Updated upstream
-app.use(apiPrefix + 'pets', petRoutes);
-=======
 const feedingEventsRoutes = require('./routes/feedingEvents');
 app.use('/api/feeding-events', feedingEventsRoutes);
 
-const registerRoutes = require('./routes/auth');
+import registerRoutes from './routes/auth.js';
 app.use('/api', registerRoutes);
 
 app.get(apiPrefix + 'getSampleData', (req, res) => {
@@ -31,7 +28,6 @@ app.get(apiPrefix + 'getSampleData', (req, res) => {
   }
   res.json(respone)
 })
->>>>>>> Stashed changes
 
 app.listen(port, () => {
     console.log(`Nutripaw app listening on port ${port}`);
