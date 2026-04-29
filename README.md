@@ -18,8 +18,8 @@ Follow these steps to get the project running on your local machine:
     npm install
     node server.js
 
-4. **Verify the Application** Once running, you should see the following message in your terminal:
-
+4. **Verify the Application** Once running, you should see the following message in your terminal
+5. 
 **Nutripaw app listening on port 3000**
 
 You can access the main application at: http://localhost:3000
