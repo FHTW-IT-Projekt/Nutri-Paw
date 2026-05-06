@@ -14,8 +14,8 @@ app.use(express.json()); // damit frontend daten an backedn sende kann
 // wandelt rohdaten in java script objekt um und speichert fsd objekt in req.body 
 
 
-/*import feedingEventsRoutes from './routes/feedingEvents';
-app.use('/api/feeding-events', feedingEventsRoutes);*/
+import feedingEventsRoutes from './routes/feedingEvents';
+app.use('/api/feeding-events', feedingEventsRoutes);
 
 import registerRoutes from './routes/auth.js';
 app.use('/api', registerRoutes);

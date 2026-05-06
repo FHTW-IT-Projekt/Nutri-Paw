@@ -14,7 +14,9 @@ router.post('/register', async (req, res) =>
         }
         if(email !== confirm_email)
         {
-          return res.status(400).json({message: "Email adresses do not match!"});
+          return res.status(400).json({
+            message: "Email adresses do not match!",
+          field: "email"});
         }
         if(password !== confirm_password)
         {
@@ -30,20 +32,18 @@ router.post('/register', async (req, res) =>
         const hashedPassword = await bcrypt.hash(password, 10); // 10: der Verschlüsselungsalgorithmus wird 2 hoch 10 mal durchlaufen
 
         const sql = "INSERT INTO users (first_name, last_name, email, password_hash, created_at) VALUES (?, ?, ?, ?, NOW())";
-        db.query(sql, [firstName, lastName, email, hashedPassword], (err, result) => {
-          if (err)
-            {
-              if(err.code === 'ER_DUP_ENTRY')
-              {
-                  return res.status(400).json({message: "Email already exists!"});
-              }
-               return res.status(500).json({error: err.message});
-            }
+        await db.execute(sql, [firstName, lastName, email, hashedPassword]);
 
-          res.status(201).json({message: "registration successful!"});
-        });  
+
+         return res.status(201).json({message: "registration successful!"});
+         
         } catch (e) {
-            res.status(500).send();
+          if(e.code === 'ER_DUP_ENTRY')
+          {
+            return res.status(400).json({message: "Email already exists!"});
+          }
+            console.error(e);
+            return res.status(500).json({message: "Internal Server Error"});
     }
 });
 
