@@ -70,8 +70,18 @@ ON DELETE CASCADE
 ON UPDATE CASCADE
 );
 INSERT INTO users (name, email, password_hash)
-VALUES ('Max Mustermann', 'max@example.com', 'hashedpassword123');
+VALUES ('Max Mustermann', 'test@example.com', '$2b$10$MCyeACoTwu1WeNMMiSs79elmF9ySrmY3ObQP8FmT9qgIZ4LeGTD6.');
 
 SELECT * FROM users;
 
-DELETE FROM users;
+DELETE FROM users
+WHERE email = 'test@example.com', 'max@example.com';
+
+INSERT INTO users (name, email, password_hash)
+VALUES (
+  'Max',
+  'max2@example.com',
+  '$2b$10$MCyeACoTwu1WeNMMiSs79elmF9ySrmY3ObQP8FmT9qgIZ4LeGTD6.'
+);
+
+SELECT email FROM users;
