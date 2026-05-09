@@ -64,9 +64,8 @@ FOREIGN KEY (pet_id) REFERENCES pets(pet_id)
 ON DELETE CASCADE
 ON UPDATE CASCADE
 );
+
+-- Testuser: max@example.com / test1234
 INSERT INTO users (name, email, password_hash)
-VALUES ('Max Mustermann', 'max@example.com', 'hashedpassword123');
-
-SELECT * FROM users;
-
-DELETE FROM users;
+VALUES ('Max Mustermann', 'max@example.com', '$2b$10$W7JudPskQz5duqO8HvFuGeTw8e/QWEJBDdgdOQ4NYiIhck8i1rCVq')
+ON DUPLICATE KEY UPDATE password_hash = VALUES(password_hash);
