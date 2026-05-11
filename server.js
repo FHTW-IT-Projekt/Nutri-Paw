@@ -12,11 +12,25 @@ const apiPrefix = '/api/'; // nur zur Trennung für frontend und Backend, damit 
 
 app.use(cors());
 app.use(express.json()); // damit frontend daten an backedn sende kann
-// wandelt rohdaten in java script objekt um und speichert fsd objrkt in req.body 
+// wandelt rohdaten in java script objekt um und speichert fsd objekt in req.body 
 
 
 app.use(apiPrefix + 'pets', petRoutes);
 app.use("/api/users", userPetsRouter); 
+import feedingEventsRoutes from './routes/feedingEvents';
+app.use('/api/feeding-events', feedingEventsRoutes);
+
+import registerRoutes from './routes/auth.js';
+app.use('/api', registerRoutes);
+
+app.get(apiPrefix + 'getSampleData', (req, res) => {
+  const respone = {
+    id: 5,
+    name: 'Test Response',
+    description: 'Go Team NutriPaw',
+  }
+  res.json(respone)
+})
 
 app.listen(port, () => {
     console.log(`Nutripaw app listening on port ${port}`);
