@@ -7,8 +7,7 @@ import petRoutes from './routes/pet.js';
 import feedingEventsRoutes from './routes/feedingEvents.js';
 import registerRoutes from './routes/auth.js';
 import petEditRoutes from './routes/petEdit.js';
-
-console.log("+++ TEST: DIE RICHTIGE SERVER.JS WIRD GESTARTET +++");
+console.log("+++ LADE MIRA DATEN VERSION 2.0 +++");
 
 // 2. APP INITIALISIEREN
 const app = express();
