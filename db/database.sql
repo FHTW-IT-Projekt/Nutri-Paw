@@ -3,7 +3,8 @@ USE nutripaw;
 
 CREATE TABLE IF NOT EXISTS users (
 user_id INT AUTO_INCREMENT PRIMARY KEY,
-name VARCHAR(100) NOT NULL,
+first_name VARCHAR(100) NOT NULL,
+last_name VARCHAR(100) NOT NULL,
 email VARCHAR(150) NOT NULL UNIQUE,
 password_hash VARCHAR(255) NOT NULL,
 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
@@ -69,8 +70,13 @@ FOREIGN KEY (pet_id) REFERENCES pets(pet_id)
 ON DELETE CASCADE
 ON UPDATE CASCADE
 );
+<<<<<<< HEAD
 INSERT INTO users (name, email, password_hash)
 VALUES ('Max Mustermann', 'test@example.com', '$2b$10$MCyeACoTwu1WeNMMiSs79elmF9ySrmY3ObQP8FmT9qgIZ4LeGTD6.');
+=======
+INSERT INTO users (first_name, last_name, email, password_hash)
+VALUES ('Max', 'Mustermann', 'max@example.com', 'hashedpassword123');
+>>>>>>> 26fd219dee6a046f7ed38d3e67dea9fa95252613
 
 SELECT * FROM users;
 

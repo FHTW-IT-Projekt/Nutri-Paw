@@ -10,21 +10,14 @@ import feedingEventRoutes from './routes/feedingEvents.js';
 const app = express();
 const port = process.env.PORT || 3000;
 
-const apiPrefix = '/api/';
-const allowedOrigins = (process.env.FRONTEND_ORIGIN || 'http://127.0.0.1:5500,http://localhost:5500')
-    .split(',')
-    .map(origin => origin.trim());
+const apiPrefix = '/api/'; // nur zur Trennung für frontend und Backend, damit klar ist, hier sind nur datenpackete und keine webpage zu erwarten
 
-app.use(cors({
-    origin: allowedOrigins,
-    credentials: true
-}));
-app.use(cookieParser()); //für die Cookies
-app.use(express.json());
+app.use(cors());
+app.use(express.json()); // damit frontend daten an backedn sende kann
+// wandelt rohdaten in java script objekt um und speichert fsd objrkt in req.body 
+
 
 app.use(apiPrefix + 'pets', petRoutes);
-app.use(apiPrefix + 'auth', authRoutes);
-app.use(apiPrefix + 'feeding-events', feedingEventRoutes);
 
 app.listen(port, () => {
     console.log(`Nutripaw app listening on port ${port}`);
