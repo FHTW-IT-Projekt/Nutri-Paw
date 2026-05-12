@@ -1,13 +1,13 @@
-import mysql from 'mysql2';
+import mysql from 'mysql2/promise';
 
 const pool = mysql.createPool({
-  host: 'localhost',
-  user: 'root',
-  password: '',
-  database: 'nutripaw', 
-  port: 3306,
+  host: process.env.DB_HOST || 'localhost',
+  user: process.env.DB_USER || 'root',
+  password: process.env.DB_PASSWORD || '',
+  database: process.env.DB_NAME || 'nutripaw',
+  port: process.env.DB_PORT || 3306,
   waitForConnections: true,
-  connectionLimit: 10
+  connectionLimit: 10,
 });
 
-export default pool.promise();
+export default pool;

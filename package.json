@@ -12,18 +12,11 @@
   },
   "dependencies": {
     "bcrypt": "^6.0.0",
-<<<<<<< HEAD
     "cookie-parser": "^1.4.7",
-=======
->>>>>>> 26fd219dee6a046f7ed38d3e67dea9fa95252613
     "cors": "^2.8.6",
     "dotenv": "^17.4.2",
     "express": "^5.2.1",
-<<<<<<< HEAD
     "jsonwebtoken": "^9.0.3",
-    "mysql2": "^3.22.2"
-=======
     "mysql2": "^3.22.3"
->>>>>>> 26fd219dee6a046f7ed38d3e67dea9fa95252613
   }
 }
