@@ -1,37 +1,41 @@
-
+import 'dotenv/config';
 import express from 'express';
 import cors from 'cors';
 //einbinden der "Router-Dateien"
 import petRoutes from './routes/pet.js';
 import userPetsRouter from "./routes/user.js";
+import cookieParser from 'cookie-parser';
+import feedingEventsRoutes from './routes/feedingEvents.js';
+import authRoutes from './routes/auth.js';
 
 const app = express();
-const port = 3000;
+const port = process.env.PORT || 3000;
 
-const apiPrefix = '/api/'; // nur zur Trennung für frontend und Backend, damit klar ist, hier sind nur datenpackete und keine webpage zu erwarten
+const apiPrefix = '/api/';
 
-app.use(cors());
-app.use(express.json()); // damit frontend daten an backedn sende kann
-// wandelt rohdaten in java script objekt um und speichert fsd objekt in req.body 
+app.use(express.json());
+app.use(cookieParser());
 
+app.use((req, res, next) => {
+    res.header('Access-Control-Allow-Origin', '*');
+    res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+    res.header('Access-Control-Allow-Headers', 'Content-Type');
+    if (req.method === 'OPTIONS') return res.sendStatus(200);
+    next();
+});
 
-app.use(apiPrefix + 'pets', petRoutes);
-app.use("/api/users", userPetsRouter); 
-import feedingEventsRoutes from './routes/feedingEvents';
 app.use('/api/feeding-events', feedingEventsRoutes);
-
-import registerRoutes from './routes/auth.js';
-app.use('/api', registerRoutes);
+app.use('/api/auth', authRoutes);
 
 app.get(apiPrefix + 'getSampleData', (req, res) => {
-  const respone = {
+  const response = {
     id: 5,
     name: 'Test Response',
     description: 'Go Team NutriPaw',
-  }
-  res.json(respone)
-})
+  };
+  res.json(response);
+});
 
 app.listen(port, () => {
-    console.log(`Nutripaw app listening on port ${port}`);
+  console.log(`Nutripaw app listening on port ${port}`);
 });
