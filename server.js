@@ -26,6 +26,7 @@ app.use((req, res, next) => {
 
 app.use('/api/feeding-events', feedingEventsRoutes);
 app.use('/api/auth', authRoutes);
+app.use("/api/users", userPetsRouter); 
 
 app.get(apiPrefix + 'getSampleData', (req, res) => {
   const response = {
