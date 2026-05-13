@@ -11,6 +11,7 @@ app.use(express.json());
 app.use(cookieParser());
 
 const FRONTEND_ORIGIN = process.env.FRONTEND_ORIGIN || 'http://127.0.0.1:5500';
+console.log('CORS Origin:', FRONTEND_ORIGIN);
 
 app.use((req, res, next) => {
     res.header('Access-Control-Allow-Origin', FRONTEND_ORIGIN);
