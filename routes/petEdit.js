@@ -3,19 +3,25 @@ import pool from '../db/db.js';
 
 const router = express.Router();
 
-//hier das Tier geadded wenn es noch nicht existiert
 router.post('/', async (req, res) => {
- // Daten vom Frontend entpacken
-  const { name, species, breed, age, color, diagnosis, behaviour } = req.body;
+  
+  const { 
+    name, species, breed, age, color, gender, weight, 
+    diagnosis, medication, behaviour, dietaryRestrictions, medicalNotes 
+  } = req.body;
 
   try {
-    // Die pet_id wird von der Datenbank automatisch vergeben (Auto-Increment)
     const [result] = await pool.query(
-      `INSERT INTO pets (name, species, race, age, colour, diagnosis, behaviour) VALUES (?, ?, ?, ?, ?, ?, ?)`,
-      [name, species, breed, age, color, diagnosis, behaviour]
+      `INSERT INTO pets (
+        name, species, race, age, colour, gender, weight, 
+        diagnosis, medication, behaviour, dietary_restrictions, medical_notes
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      [
+        name, species, breed, age, color, gender, weight, 
+        diagnosis, medication, behaviour, dietaryRestrictions, medicalNotes
+      ]
     );
 
-    // result.insertId gib die ID des Tieres zurück
     res.status(201).json({ 
       message: 'Tier erfolgreich angelegt!',
       newPetId: result.insertId 
@@ -27,18 +33,27 @@ router.post('/', async (req, res) => {
 });
 
 
-//hier passiert das update und die Routeist /api/petedit/:id
+
 router.put('/:id', async (req, res) => {
   const petId = req.params.id;
   
- 
-  const { name, species, breed, age, color, diagnosis, behaviour } = req.body;
+  
+  const { 
+    name, species, breed, age, color, gender, weight, 
+    diagnosis, medication, behaviour, dietaryRestrictions, medicalNotes 
+  } = req.body;
 
   try {
-    // SQL-Befehl mit deinen echten Spaltennamen: race, colour, behaviour
     const [result] = await pool.query(
-      `UPDATE pets SET name = ?, species = ?, race = ?, age = ?, colour = ?, diagnosis = ?, behaviour = ? WHERE pet_id = ?`,
-      [name, species, breed, age, color, diagnosis, behaviour, petId]
+      `UPDATE pets SET 
+        name = ?, species = ?, race = ?, age = ?, colour = ?, gender = ?, weight = ?, 
+        diagnosis = ?, medication = ?, behaviour = ?, dietary_restrictions = ?, medical_notes = ? 
+      WHERE pet_id = ?`,
+      [
+        name, species, breed, age, color, gender, weight, 
+        diagnosis, medication, behaviour, dietaryRestrictions, medicalNotes, 
+        petId
+      ]
     );
 
     if (result.affectedRows === 0) {

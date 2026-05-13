@@ -74,3 +74,8 @@ ON UPDATE CASCADE
 INSERT INTO users (first_name, last_name, email, password_hash)
 VALUES ('Max', 'Mustermann', 'max@example.com', '$2b$10$W7JudPskQz5duqO8HvFuGeTw8e/QWEJBDdgdOQ4NYiIhck8i1rCVq')
 ON DUPLICATE KEY UPDATE password_hash = VALUES(password_hash);
+
+ALTER TABLE pets 
+ADD COLUMN dietary_restrictions TEXT,
+ADD COLUMN medical_notes TEXT,
+ADD COLUMN weight VARCHAR(50);
