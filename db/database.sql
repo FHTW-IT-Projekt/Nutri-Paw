@@ -3,25 +3,30 @@ USE nutripaw;
 
 CREATE TABLE IF NOT EXISTS users (
 user_id INT AUTO_INCREMENT PRIMARY KEY,
-name VARCHAR(100) NOT NULL,
+first_name VARCHAR(100) NOT NULL,
+last_name VARCHAR(100) NOT NULL,
 email VARCHAR(150) NOT NULL UNIQUE,
 password_hash VARCHAR(255) NOT NULL,
 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE TABLE IF NOT EXISTS pets (
-pet_id INT AUTO_INCREMENT PRIMARY KEY,
-owner_id INT NOT NULL,
-name VARCHAR(100) NOT NULL,
-species VARCHAR(50) NOT NULL,
-breed VARCHAR(100),
-age INT,
-gender VARCHAR(20),
-created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-CONSTRAINT fk_pet_owner
-FOREIGN KEY (owner_id) REFERENCES users(user_id)
-ON DELETE CASCADE
-ON UPDATE CASCADE
+  pet_id INT AUTO_INCREMENT PRIMARY KEY,
+  owner_id INT NOT NULL,
+  name VARCHAR(100) NOT NULL,
+  species VARCHAR(50) NOT NULL,
+  race VARCHAR(100),
+  colour VARCHAR(50),
+  age INT,
+  gender VARCHAR(20),
+  diagnosis VARCHAR(255),
+  medication VARCHAR(255),
+  behaviour VARCHAR(255),
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  CONSTRAINT fk_pet_owner
+    FOREIGN KEY (owner_id) REFERENCES users(user_id)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS food_entries (
@@ -66,6 +71,15 @@ ON UPDATE CASCADE
 );
 
 -- Testuser: max@example.com / test1234
-INSERT INTO users (name, email, password_hash)
-VALUES ('Max Mustermann', 'max@example.com', '$2b$10$W7JudPskQz5duqO8HvFuGeTw8e/QWEJBDdgdOQ4NYiIhck8i1rCVq')
+INSERT INTO users (first_name, last_name, email, password_hash)
+VALUES ('Max', 'Mustermann', 'max@example.com', '$2b$10$W7JudPskQz5duqO8HvFuGeTw8e/QWEJBDdgdOQ4NYiIhck8i1rCVq')
 ON DUPLICATE KEY UPDATE password_hash = VALUES(password_hash);
+
+ALTER TABLE pets 
+ADD COLUMN dietary_restrictions TEXT,
+ADD COLUMN medical_notes TEXT,
+ADD COLUMN weight VARCHAR(50);
+
+ALTER TABLE users
+ADD COLUMN first_name VARCHAR(100),
+ADD COLUMN last_name VARCHAR(100);

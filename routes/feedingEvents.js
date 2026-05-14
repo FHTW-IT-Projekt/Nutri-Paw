@@ -3,7 +3,7 @@ import db from '../db/db.js';
 
 const router = express.Router();
 
-// POST /api/feeding-events
+// POST /api/feeding-events  (Tickbox angehakt)
 router.post('/', async (req, res) => {
     const { pet_id, task_id, schedule_time } = req.body;
     if (!pet_id) return res.status(400).json({ error: 'pet_id required' });
@@ -19,7 +19,7 @@ router.post('/', async (req, res) => {
     }
 });
 
-// GET /api/feeding-events/today/:petId
+// GET /api/feeding-events/today/:petId  (Tickbox-Status beim Laden wiederherstellen)
 router.get('/today/:petId', async (req, res) => {
     const { petId } = req.params;
     try {
@@ -33,7 +33,7 @@ router.get('/today/:petId', async (req, res) => {
     }
 });
 
-// DELETE /api/feeding-events (uncheck)
+// DELETE /api/feeding-events  (Tickbox abgehakt)
 router.delete('/', async (req, res) => {
     const { pet_id, task_id, schedule_time } = req.body;
     if (!pet_id) return res.status(400).json({ error: 'pet_id required' });
