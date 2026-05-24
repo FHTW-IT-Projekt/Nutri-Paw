@@ -85,3 +85,36 @@ ADD COLUMN first_name VARCHAR(100),
 ADD COLUMN last_name VARCHAR(100);
 
 ALTER TABLE users ADD COLUMN role ENUM('owner', 'sitter') NOT NULL DEFAULT 'owner';
+
+ALTER TABLE users
+ADD COLUMN first_name VARCHAR(100),
+
+ALTER TABLE users 
+ADD COLUMN role ENUM('owner', 'sitter') NOT NULL DEFAULT 'owner';
+ALTER TABLE users
+
+ADD COLUMN first_name VARCHAR(100),
+ADD COLUMN last_name VARCHAR(100);
+ALTER TABLE users 
+ADD COLUMN role ENUM('owner', 'sitter') NOT NULL DEFAULT 'owner';
+
+DESCRIBE users;
+
+ALTER TABLE pets 
+ADD COLUMN dietary_restrictions TEXT,
+ADD COLUMN medical_notes TEXT,
+ADD COLUMN weight VARCHAR(50);
+
+DESCRIBE pets;
+
+USE nutripaw;
+
+ALTER TABLE users 
+ADD COLUMN role ENUM('owner', 'sitter') NOT NULL DEFAULT 'owner';
+
+DESCRIBE users;
+SHOW COLUMNS FROM users;
+
+USE nutripaw;
+SHOW COLUMNS FROM users;
+

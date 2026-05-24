@@ -33,7 +33,8 @@ router.get('/:userId', async (req, res) => {
 });
 
 // PATCH /api/users/:userId
-router.patch('/:userId', async (req, res) => {
+router.put('/:userId', async (req, res) => {
+  console.log('PATCH reached');
   const { userId } = req.params;
   const { firstname, lastname, email, role } = req.body;
 
