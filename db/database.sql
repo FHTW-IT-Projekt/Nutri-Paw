@@ -83,3 +83,5 @@ ADD COLUMN weight VARCHAR(50);
 ALTER TABLE users
 ADD COLUMN first_name VARCHAR(100),
 ADD COLUMN last_name VARCHAR(100);
+
+ALTER TABLE users ADD COLUMN role ENUM('owner', 'sitter') NOT NULL DEFAULT 'owner';

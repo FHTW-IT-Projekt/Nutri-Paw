@@ -8,6 +8,7 @@ import authRoutes from './routes/auth.js';
 import petRoutes from './routes/pet.js';
 import feedingEventsRoutes from './routes/feedingEvents.js';
 import petEditRoutes from './routes/petEdit.js';
+import userRoutes from './routes/users.js';
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -50,6 +51,7 @@ app.get('/api/getSampleData', (req, res) => {
 
 // 4. ROUTER EINHÄNGEN
 app.use('/api/auth', authRoutes);
+app.use('/api/users', userRoutes);
 app.use('/api/feeding-events', feedingEventsRoutes);
 app.use('/api/pets', petRoutes);
 app.use('/api/petedit', petEditRoutes);

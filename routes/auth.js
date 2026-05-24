@@ -57,7 +57,7 @@ router.post('/login', async (req, res) => {
 
     try {
         const [rows] = await db.execute(
-            'SELECT user_id, first_name, last_name, email, password_hash FROM users WHERE email = ?',
+            'SELECT user_id, first_name, last_name, email, password_hash, role FROM users WHERE email = ?',
             [email]
         );
 
@@ -85,7 +85,7 @@ router.post('/login', async (req, res) => {
             ...(rememberMe ? { maxAge: 30 * 24 * 60 * 60 * 1000 } : {}),
         });
 
-        res.json({ userId: user.user_id, firstName: user.first_name, lastName: user.last_name, email: user.email });
+        res.json({ userId: user.user_id, firstName: user.first_name, lastName: user.last_name, email: user.email, role: user.role });
     } catch (err) {
         console.error('[auth/login]', err);
         res.status(500).json({ error: 'Internal server error' });
