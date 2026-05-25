@@ -117,4 +117,3 @@ SHOW COLUMNS FROM users;
 
 USE nutripaw;
 SHOW COLUMNS FROM users;
-
