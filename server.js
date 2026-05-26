@@ -10,6 +10,7 @@ import feedingEventsRoutes from './routes/feedingEvents.js';
 import petEditRoutes from './routes/petEdit.js';
 import petUploadsRoutes from './routes/petUploads.js';
 import userRoutes from './routes/users.js';
+import exportMedicalHistoryRoutes from './routes/exportMedicalHistory.js';
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -64,6 +65,7 @@ app.use('/api/feeding-events', feedingEventsRoutes);
 app.use('/api/pets', petRoutes);
 app.use('/api/petedit', petEditRoutes);
 app.use('/api/pets/:petId/uploads', petUploadsRoutes);
+app.use('/api/medical', exportMedicalHistoryRoutes);
 
 
 app.listen(port, () => {
