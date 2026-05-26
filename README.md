@@ -39,7 +39,7 @@ To verify the backend is working and see dummy data, try visiting: http://localh
 
 5. die backend pages müssen auch an die server.js weiter gegeben werden, denn sie korrdiniert die Anfragen vom frontend. Dazu zb in die server.js so etwas schreiben wie import petRoutes from "'./routes/pet.js'"
 
-Alles klar, mein Fehler. Hier ist das README für dein Team im gewünschten, direkten und stichpunktartigen Stil, das genau erklärt, was gemacht wurde und wie Ethereal Email funktioniert.
+
 
 📧 Feature Update: E-Mail-Reminder (Cronjob & Nodemailer)
 Wir haben die Logik für automatisierte E-Mail-Erinnerungen eingebaut (z. B. für Medikamente oder Fütterung). Damit bei euch lokal alles läuft und nichts crasht, beachtet bitte folgende Punkte:
