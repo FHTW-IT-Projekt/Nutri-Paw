@@ -25,8 +25,9 @@ app.use(cors({
 
 app.options(/.*/, cors());
 
-app.use(express.json()); 
-app.use(cookieParser()); 
+app.use(express.json());
+app.use(cookieParser());
+app.use('/uploads', express.static('uploads'));
 
 const FRONTEND_ORIGIN = process.env.FRONTEND_ORIGIN || 'http://127.0.0.1:5500';
 
