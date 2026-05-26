@@ -97,3 +97,13 @@ SHOW COLUMNS FROM users;
 
 ALTER TABLE users ADD COLUMN IF NOT EXISTS image_url VARCHAR(255);
 ALTER TABLE pets  ADD COLUMN IF NOT EXISTS image_url VARCHAR(255);
+ALTER TABLE pets ADD COLUMN castrated BOOLEAN DEFAULT FALSE;
+
+-- table for weight tracking for medicalHistory
+CREATE TABLE IF NOT EXISTS weight_history (
+    weight_id INT AUTO_INCREMENT PRIMARY KEY,
+    pet_id INT NOT NULL,
+    weight DECIMAL(5,2) NOT NULL,
+    entry_date DATE NOT NULL,
+    FOREIGN KEY (pet_id) REFERENCES pets(pet_id) ON DELETE CASCADE
+);
