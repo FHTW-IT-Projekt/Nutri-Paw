@@ -8,6 +8,7 @@ import authRoutes from './routes/auth.js';
 import petRoutes from './routes/pet.js';
 import feedingEventsRoutes from './routes/feedingEvents.js';
 import petEditRoutes from './routes/petEdit.js';
+import petAccessRoutes from './routes/petAccess.js';
 import userRoutes from './routes/users.js';
 import medicalHistoryRoutes from './routes/medicalHistory.js';
 
@@ -62,6 +63,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/feeding-events', feedingEventsRoutes);
 app.use('/api/pets', petRoutes);
+app.use('/api/petedit', petAccessRoutes);
 app.use('/api/petedit', petEditRoutes);
 app.use('/api/medical-history', medicalHistoryRoutes);
 
