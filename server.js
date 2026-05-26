@@ -8,7 +8,9 @@ import authRoutes from './routes/auth.js';
 import petRoutes from './routes/pet.js';
 import feedingEventsRoutes from './routes/feedingEvents.js';
 import petEditRoutes from './routes/petEdit.js';
+import petUploadsRoutes from './routes/petUploads.js';
 import userRoutes from './routes/users.js';
+import exportMedicalHistoryRoutes from './routes/exportMedicalHistory.js';
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -27,6 +29,7 @@ app.options(/.*/, cors());
 
 app.use(express.json());
 app.use(cookieParser());
+
 app.use('/uploads', express.static('uploads'));
 
 const FRONTEND_ORIGIN = process.env.FRONTEND_ORIGIN || 'http://127.0.0.1:5500';
@@ -62,6 +65,8 @@ app.use('/api/users', userRoutes);
 app.use('/api/feeding-events', feedingEventsRoutes);
 app.use('/api/pets', petRoutes);
 app.use('/api/petedit', petEditRoutes);
+app.use('/api/pets/:petId/uploads', petUploadsRoutes);
+app.use('/api/medical', exportMedicalHistoryRoutes);
 
 
 app.listen(port, () => {
