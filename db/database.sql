@@ -74,3 +74,56 @@ ON UPDATE CASCADE
 INSERT INTO users (first_name, last_name, email, password_hash)
 VALUES ('Max', 'Mustermann', 'max@example.com', '$2b$10$W7JudPskQz5duqO8HvFuGeTw8e/QWEJBDdgdOQ4NYiIhck8i1rCVq')
 ON DUPLICATE KEY UPDATE password_hash = VALUES(password_hash);
+
+ALTER TABLE pets 
+ADD COLUMN dietary_restrictions TEXT,
+ADD COLUMN medical_notes TEXT,
+ADD COLUMN weight VARCHAR(50);
+
+ALTER TABLE users ADD COLUMN role ENUM('owner', 'sitter') NOT NULL DEFAULT 'owner';
+
+
+DESCRIBE users;
+
+DESCRIBE pets;
+
+USE nutripaw;
+
+DESCRIBE users;
+SHOW COLUMNS FROM users;
+
+USE nutripaw;
+SHOW COLUMNS FROM users;
+
+ALTER TABLE users ADD COLUMN IF NOT EXISTS image_url VARCHAR(255);
+ALTER TABLE pets  ADD COLUMN IF NOT EXISTS image_url VARCHAR(255);
+ALTER TABLE pets ADD COLUMN castrated BOOLEAN DEFAULT FALSE;
+
+-- table for weight tracking for medicalHistory
+CREATE TABLE IF NOT EXISTS weight_history (
+    weight_id INT AUTO_INCREMENT PRIMARY KEY,
+    pet_id INT NOT NULL,
+    weight DECIMAL(5,2) NOT NULL,
+    entry_date DATE NOT NULL,
+    FOREIGN KEY (pet_id) REFERENCES pets(pet_id) ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS pet_access (
+    access_id INT AUTO_INCREMENT PRIMARY KEY,
+    pet_id INT NOT NULL,
+    user_id INT NOT NULL,
+    role ENUM('co-owner', 'sitter', 'shared') NOT NULL DEFAULT 'shared',
+    granted_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    
+    UNIQUE KEY unique_pet_user (pet_id, user_id),
+    
+    CONSTRAINT fk_access_pet
+        FOREIGN KEY (pet_id) REFERENCES pets(pet_id)
+        ON DELETE CASCADE
+        ON UPDATE CASCADE,
+        
+    CONSTRAINT fk_access_user
+        FOREIGN KEY (user_id) REFERENCES users(user_id)
+        ON DELETE CASCADE
+        ON UPDATE CASCADE
+);
