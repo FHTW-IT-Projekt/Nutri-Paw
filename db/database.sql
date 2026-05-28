@@ -118,3 +118,5 @@ SHOW COLUMNS FROM users;
 USE nutripaw;
 SHOW COLUMNS FROM users;
 
+ALTER TABLE users 
+ADD COLUMN reminder_active TINYINT(1) DEFAULT 1;

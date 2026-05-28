@@ -2,6 +2,7 @@ import 'dotenv/config';
 import express from 'express';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
+import cron from 'node-cron';
 
 // --- ALLE IMPORTE GANZ OBEN ---
 import authRoutes from './routes/auth.js';
@@ -9,6 +10,9 @@ import petRoutes from './routes/pet.js';
 import feedingEventsRoutes from './routes/feedingEvents.js';
 import petEditRoutes from './routes/petEdit.js';
 import userRoutes from './routes/users.js';
+import { sendReminderEmail } from './utils/mailer.js';
+import reminderRoutes from './routes/reminders.js';
+import pool from './db/db.js';
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -61,7 +65,50 @@ app.use('/api/users', userRoutes);
 app.use('/api/feeding-events', feedingEventsRoutes);
 app.use('/api/pets', petRoutes);
 app.use('/api/petedit', petEditRoutes);
+app.use('/api/reminders', reminderRoutes);
 
+// Cronjob: Läuft z.B. jede Minute zum Testen ('* * * * *')
+// Später kannst du es auf z.B. stündlich ('0 * * * *') ändern
+cron.schedule('* * * * *', async () => {
+    console.log('⏰ Prüfe auf fällige Reminder (minütlich)...');
+    
+    try {
+        // Die Datenbank sucht: 
+        // 1. Welche Reminder sind aktiv (enabled = 1)?
+        // 2. Passt die gespeicherte remind_time exakt zur aktuellen Uhrzeit (Stunde:Minute)?
+      const [dueReminders] = await pool.query(`
+            SELECT 
+                users.email, 
+                users.name, 
+                pets.name AS petName, 
+                reminders.task_id 
+            FROM reminders
+            JOIN pets ON reminders.pet_id = pets.pet_id
+            JOIN users ON pets.owner_id = users.user_id
+            WHERE reminders.enabled = 1 
+            AND users.reminder_active = 1
+            AND DATE_FORMAT(reminders.remind_time, '%H:%i') = DATE_FORMAT(CURRENT_TIME, '%H:%i')
+        `);
+
+        // Wenn er niemanden findet, macht er nichts.
+        if (dueReminders.length === 0) {
+            console.log('Keine Mails für diese Minute fällig.');
+            return;
+        }
+
+        // Wenn er fällige Aufgaben findet, schickt er die Mails raus
+        for (const task of dueReminders) {
+            await sendReminderEmail(
+                task.email, // Empfänger (aus der DB)
+                `NutriPaw: Zeit für ${task.petName}!`, // Betreff
+                `Hallo ${task.first_name || 'Nutzer'},\n\nes ist Zeit für die Aufgabe: ${task.task_id} für dein Tier ${task.petName}.\n\nLiebe Grüße,\nDein NutriPaw Team` // Text
+            );
+        }
+
+    } catch (error) {
+        console.error('❌ Fehler im Cronjob:', error);
+    }
+});
 
 app.listen(port, () => {
     console.log(`Nutripaw app listening on port ${port}`);
