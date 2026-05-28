@@ -9,10 +9,12 @@ import authRoutes from './routes/auth.js';
 import petRoutes from './routes/pet.js';
 import feedingEventsRoutes from './routes/feedingEvents.js';
 import petEditRoutes from './routes/petEdit.js';
+import petAccessRoutes from './routes/petAccess.js';
 import userRoutes from './routes/users.js';
 import { sendReminderEmail } from './utils/mailer.js';
 import reminderRoutes from './routes/reminders.js';
 import pool from './db/db.js';
+import medicalHistoryRoutes from './routes/medicalHistory.js';
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -29,8 +31,9 @@ app.use(cors({
 
 app.options(/.*/, cors());
 
-app.use(express.json()); 
-app.use(cookieParser()); 
+app.use(express.json());
+app.use(cookieParser());
+app.use('/uploads', express.static('uploads'));
 
 const FRONTEND_ORIGIN = process.env.FRONTEND_ORIGIN || 'http://127.0.0.1:5500';
 
@@ -64,8 +67,10 @@ app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/feeding-events', feedingEventsRoutes);
 app.use('/api/pets', petRoutes);
+app.use('/api/petedit', petAccessRoutes);
 app.use('/api/petedit', petEditRoutes);
 app.use('/api/reminders', reminderRoutes);
+app.use('/api/medical-history', medicalHistoryRoutes);
 
 // Cronjob: Läuft z.B. jede Minute zum Testen ('* * * * *')
 // Später kannst du es auf z.B. stündlich ('0 * * * *') ändern

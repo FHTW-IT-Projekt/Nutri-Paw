@@ -80,37 +80,14 @@ ADD COLUMN dietary_restrictions TEXT,
 ADD COLUMN medical_notes TEXT,
 ADD COLUMN weight VARCHAR(50);
 
-ALTER TABLE users
-ADD COLUMN first_name VARCHAR(100),
-ADD COLUMN last_name VARCHAR(100);
-
 ALTER TABLE users ADD COLUMN role ENUM('owner', 'sitter') NOT NULL DEFAULT 'owner';
 
-ALTER TABLE users
-ADD COLUMN first_name VARCHAR(100),
-
-ALTER TABLE users 
-ADD COLUMN role ENUM('owner', 'sitter') NOT NULL DEFAULT 'owner';
-ALTER TABLE users
-
-ADD COLUMN first_name VARCHAR(100),
-ADD COLUMN last_name VARCHAR(100);
-ALTER TABLE users 
-ADD COLUMN role ENUM('owner', 'sitter') NOT NULL DEFAULT 'owner';
 
 DESCRIBE users;
-
-ALTER TABLE pets 
-ADD COLUMN dietary_restrictions TEXT,
-ADD COLUMN medical_notes TEXT,
-ADD COLUMN weight VARCHAR(50);
 
 DESCRIBE pets;
 
 USE nutripaw;
-
-ALTER TABLE users 
-ADD COLUMN role ENUM('owner', 'sitter') NOT NULL DEFAULT 'owner';
 
 DESCRIBE users;
 SHOW COLUMNS FROM users;
@@ -120,3 +97,35 @@ SHOW COLUMNS FROM users;
 
 ALTER TABLE users 
 ADD COLUMN reminder_active TINYINT(1) DEFAULT 1;
+ALTER TABLE users ADD COLUMN IF NOT EXISTS image_url VARCHAR(255);
+ALTER TABLE pets  ADD COLUMN IF NOT EXISTS image_url VARCHAR(255);
+ALTER TABLE pets ADD COLUMN castrated BOOLEAN DEFAULT FALSE;
+
+-- table for weight tracking for medicalHistory
+CREATE TABLE IF NOT EXISTS weight_history (
+    weight_id INT AUTO_INCREMENT PRIMARY KEY,
+    pet_id INT NOT NULL,
+    weight DECIMAL(5,2) NOT NULL,
+    entry_date DATE NOT NULL,
+    FOREIGN KEY (pet_id) REFERENCES pets(pet_id) ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS pet_access (
+    access_id INT AUTO_INCREMENT PRIMARY KEY,
+    pet_id INT NOT NULL,
+    user_id INT NOT NULL,
+    role ENUM('co-owner', 'sitter', 'shared') NOT NULL DEFAULT 'shared',
+    granted_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    
+    UNIQUE KEY unique_pet_user (pet_id, user_id),
+    
+    CONSTRAINT fk_access_pet
+        FOREIGN KEY (pet_id) REFERENCES pets(pet_id)
+        ON DELETE CASCADE
+        ON UPDATE CASCADE,
+        
+    CONSTRAINT fk_access_user
+        FOREIGN KEY (user_id) REFERENCES users(user_id)
+        ON DELETE CASCADE
+        ON UPDATE CASCADE
+);
