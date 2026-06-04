@@ -51,8 +51,22 @@ router.put('/:id', async (req, res) => {
   
   const { 
     name, species, breed, age, color, gender, weight, 
-    diagnosis, medication, behaviour, dietaryRestrictions, medicalNotes 
+    diagnosis, medication, behaviour, dietaryRestrictions, medicalNotes
   } = req.body;
+
+  
+    //changes for medication handling
+    const medSource = req.body.medication_data ? req.body.medication_data : req.body;
+  
+    const { 
+      medication_name, 
+      medication_type, 
+      dosage, 
+      start_date, 
+      end_date, 
+      times, 
+      week_days 
+    } = medSource;
 
   try {
     const [result] = await pool.query(
@@ -70,6 +84,27 @@ router.put('/:id', async (req, res) => {
     if (result.affectedRows === 0) {
       return res.status(404).json({ message: 'Pet not found!' });
     }
+
+    //changes for medication handling
+if (medication_name && start_date) {
+      // Macht aus dem Array ["08:00", "20:00"] einen sauberen String "08:00,20:00"
+      const timeString = Array.isArray(times) ? times.join(',') : '08:00';
+      
+      // Nutzt das übergebene week_days (entweder "all" oder z.B. "1,4")
+      const daysString = week_days || 'all';
+
+      const finalEndDate = end_date && end_date.trim() !== '' ? end_date : null;
+
+      await pool.query(
+        `INSERT INTO medications (pet_id, medication_name, medication_type, dosage, start_date, end_date, schedule_times, week_days)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+        [petId, medication_name, medication_type, dosage, start_date, finalEndDate, timeString, daysString]
+      );
+
+           console.log("Medikament erfolgreich für Pet " + petId + " gespeichert!");
+    }
+
+
     
     res.json({ message: 'Erfolgreich aktualisiert' });
   } catch (error) {
