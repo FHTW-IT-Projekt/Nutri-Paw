@@ -129,3 +129,20 @@ CREATE TABLE IF NOT EXISTS pet_access (
         ON DELETE CASCADE
         ON UPDATE CASCADE
 );
+
+
+
+CREATE TABLE IF NOT EXISTS medication_events (
+event_id INT AUTO_INCREMENT PRIMARY KEY,
+pet_id INT NOT NULL,
+task_id VARCHAR(50),
+schedule_time VARCHAR(20),
+medicated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+CONSTRAINT fk_medication_event_pet
+FOREIGN KEY (pet_id) REFERENCES pets(pet_id)
+ON DELETE CASCADE
+ON UPDATE CASCADE
+);
+
+ALTER TABLE medications ADD COLUMN schedule_times VARCHAR(255) NOT NULL DEFAULT '08:00';
+ALTER TABLE medications ADD COLUMN week_days VARCHAR(50) NOT NULL DEFAULT 'all';
