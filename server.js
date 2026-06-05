@@ -84,7 +84,7 @@ cron.schedule('* * * * *', async () => {
       const [dueReminders] = await pool.query(`
             SELECT 
                 users.email, 
-                users.name, 
+                CONCAT(users.first_name, ' ', users.last_name) AS name,
                 pets.name AS petName, 
                 reminders.task_id 
             FROM reminders
