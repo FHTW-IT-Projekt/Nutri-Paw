@@ -1,0 +1,13 @@
+{
+	"folders": [
+		{
+			"path": "../nutripaw-frontend"
+		},
+		{
+			"path": "."
+		}
+	],
+	"settings": {
+		"liveServer.settings.multiRootWorkspaceName": "Nutri-Paw"
+	}
+}

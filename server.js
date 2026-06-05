@@ -83,10 +83,17 @@ cron.schedule('* * * * *', async () => {
         // 2. Passt die gespeicherte remind_time exakt zur aktuellen Uhrzeit (Stunde:Minute)?
       const [dueReminders] = await pool.query(`
             SELECT 
+<<<<<<< HEAD
              users.email, 
             CONCAT(users.first_name, ' ', users.last_name) AS name, 
             pets.name AS petName, 
             reminders.task_id 
+=======
+                users.email, 
+                CONCAT(users.first_name, ' ', users.last_name) AS name,
+                pets.name AS petName, 
+                reminders.task_id 
+>>>>>>> 66cf82a34f654af9920661d4d173073f1ba7e562
             FROM reminders
             JOIN pets ON reminders.pet_id = pets.pet_id
             JOIN users ON pets.owner_id = users.user_id
