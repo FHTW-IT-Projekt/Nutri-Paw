@@ -30,7 +30,7 @@ const upload = multer({
       ? cb(null, true)
       : cb(new Error('Only images (JPG, PNG, GIF, WEBP) and PDF files are allowed'));
   },
-  limits: { fileSize: 10 * 1024 * 1024 }
+  limits: { fileSize: 50 * 1024 * 1024 }
 });
 
 // GET /api/pets/:petId/uploads
@@ -49,6 +49,38 @@ router.get('/', async (req, res) => {
   } catch (error) {
     console.error('[GET /api/pets/:petId/uploads]', error);
     res.status(500).json({ message: 'Internal server error' });
+  }
+});
+
+// GET /api/pets/:petId/uploads/:uploadId/download
+router.get('/:uploadId/download', async (req, res) => {
+  const { petId, uploadId } = req.params;
+
+  try {
+    const [[upload]] = await pool.query(
+      `SELECT filename, file_url
+       FROM pet_uploads
+       WHERE pet_id = ? AND upload_id = ?`,
+      [petId, uploadId]
+    );
+
+    if (!upload) {
+      return res.status(404).json({ message: 'Upload not found' });
+    }
+
+    const filePath = path.resolve(
+      process.cwd(),
+      upload.file_url.replace(/^\//, '')
+    );
+
+    if (!existsSync(filePath)) {
+      return res.status(404).json({ message: 'File not found on server' });
+    }
+
+    return res.download(filePath, upload.filename);
+  } catch (error) {
+    console.error('[GET /api/pets/:petId/uploads/:uploadId/download]', error);
+    return res.status(500).json({ message: 'Internal server error' });
   }
 });
 
