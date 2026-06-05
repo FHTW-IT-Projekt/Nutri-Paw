@@ -153,5 +153,17 @@ CREATE TABLE IF NOT EXISTS pet_access (
         ON UPDATE CASCADE
 
 );
+CREATE TABLE IF NOT EXISTS reminders (
+  reminder_id INT AUTO_INCREMENT PRIMARY KEY,
+  pet_id INT NOT NULL,
+  task_id VARCHAR(50) NOT NULL,
+  remind_time TIME NOT NULL,
+  enabled TINYINT(1) DEFAULT 1,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 
+  CONSTRAINT fk_reminder_pet
+    FOREIGN KEY (pet_id) REFERENCES pets(pet_id)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE
+);
 
