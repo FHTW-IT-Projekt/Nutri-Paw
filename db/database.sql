@@ -110,6 +110,29 @@ CREATE TABLE IF NOT EXISTS weight_history (
     FOREIGN KEY (pet_id) REFERENCES pets(pet_id) ON DELETE CASCADE
 );
 
+
+USE nutripaw;
+
+CREATE TABLE pet_uploads (
+  upload_id INT AUTO_INCREMENT PRIMARY KEY,
+  pet_id INT NOT NULL,
+  filename VARCHAR(255) NOT NULL,
+  file_url VARCHAR(500) NOT NULL,
+  mime_type VARCHAR(100),
+  note TEXT,
+  uploaded_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+
+  INDEX idx_pet_uploads_pet_id (pet_id)
+);
+
+CREATE TABLE IF NOT EXISTS weight_history (
+    weight_id INT AUTO_INCREMENT PRIMARY KEY,
+    pet_id INT NOT NULL,
+    weight DECIMAL(5,2) NOT NULL,
+    entry_date DATE NOT NULL,
+    FOREIGN KEY (pet_id) REFERENCES pets(pet_id) ON DELETE CASCADE
+);
+
 CREATE TABLE IF NOT EXISTS pet_access (
     access_id INT AUTO_INCREMENT PRIMARY KEY,
     pet_id INT NOT NULL,
@@ -128,4 +151,19 @@ CREATE TABLE IF NOT EXISTS pet_access (
         FOREIGN KEY (user_id) REFERENCES users(user_id)
         ON DELETE CASCADE
         ON UPDATE CASCADE
+
 );
+CREATE TABLE IF NOT EXISTS reminders (
+  reminder_id INT AUTO_INCREMENT PRIMARY KEY,
+  pet_id INT NOT NULL,
+  task_id VARCHAR(50) NOT NULL,
+  remind_time TIME NOT NULL,
+  enabled TINYINT(1) DEFAULT 1,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+
+  CONSTRAINT fk_reminder_pet
+    FOREIGN KEY (pet_id) REFERENCES pets(pet_id)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE
+);
+
