@@ -1,4 +1,6 @@
 import express from 'express';
+import path from 'path';
+import { existsSync } from 'fs';
 import PDFDocument from 'pdfkit';
 import pool from '../db/db.js';
 
@@ -9,7 +11,7 @@ const ACCENT_COLOR = '#8B6914';
 const LINE_COLOR   = '#D4A94A';
 
 function section(doc, title) {
-  doc.moveDown(0.6)
+  doc.moveDown(1)
      .fontSize(12)
      .fillColor(BRAND_COLOR)
      .font('Helvetica-Bold')
@@ -37,6 +39,47 @@ function formatDate(value) {
   return isNaN(d.getTime()) ? String(value) : d.toLocaleDateString('en-GB');
 }
 
+function resolveUploadPath(fileUrl) {
+  if (!fileUrl) return null;
+  return path.resolve(process.cwd(), fileUrl.replace(/^\//, ''));
+}
+
+// GET /api/medical/:petId/export-data  → returns raw JSON for client-side PDF generation
+router.get('/:petId/export-data', async (req, res) => {
+  const { petId } = req.params;
+
+  try {
+    const [[pet]] = await pool.query(
+      `SELECT pet_id, owner_id, name, species, race, colour, age, gender,
+              diagnosis, medication, behaviour, dietary_restrictions,
+              medical_notes, weight
+       FROM pets WHERE pet_id = ?`,
+      [petId]
+    );
+
+    if (!pet) {
+      return res.status(404).json({ message: 'Pet not found' });
+    }
+
+    const [medications] = await pool.query(
+      `SELECT medication_name, medication_type, dosage, start_date, end_date
+       FROM medications WHERE pet_id = ? ORDER BY start_date DESC`,
+      [petId]
+    );
+
+    const [uploads] = await pool.query(
+      `SELECT filename, note, uploaded_at
+       FROM pet_uploads WHERE pet_id = ? ORDER BY uploaded_at DESC`,
+      [petId]
+    );
+
+    return res.json({ pet, medications, uploads });
+  } catch (error) {
+    console.error('[GET /api/medical/:petId/export-data]', error);
+    return res.status(500).json({ message: 'Internal server error' });
+  }
+});
+
 // GET /api/medical/:petId/export-pdf
 router.get('/:petId/export-pdf', async (req, res) => {
   const { petId } = req.params;
@@ -61,7 +104,7 @@ router.get('/:petId/export-pdf', async (req, res) => {
     );
 
     const [uploads] = await pool.query(
-      `SELECT filename, note, uploaded_at
+      `SELECT filename, file_url, mime_type, note, uploaded_at
        FROM pet_uploads WHERE pet_id = ? ORDER BY uploaded_at DESC`,
       [petId]
     );
@@ -166,6 +209,17 @@ router.get('/:petId/export-pdf', async (req, res) => {
            .fillColor(BRAND_COLOR).font('Helvetica-Bold').text(u.filename, { continued: true })
            .font('Helvetica').fillColor('#555555')
            .text(`  (${formatDate(u.uploaded_at)})${u.note ? ' — ' + u.note : ''}`);
+
+        const imagePath = resolveUploadPath(u.file_url);
+        if (u.mime_type?.startsWith('image/') && imagePath && existsSync(imagePath)) {
+          doc.moveDown(0.3);
+          try {
+            doc.image(imagePath, { fit: [160, 160], align: 'left' });
+          } catch (imageError) {
+            console.warn('[export-pdf] Could not render image:', imageError.message);
+          }
+          doc.moveDown(0.2);
+        }
       });
     }
 
