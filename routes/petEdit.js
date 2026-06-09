@@ -17,8 +17,8 @@ const upload = multer({ storage });
 router.post('/', async (req, res) => {
   
   const { 
-    name, species, breed, age, color, gender, weight, 
-    diagnosis, medication, behaviour, dietaryRestrictions, medicalNotes 
+    name, species, breed, age, colour, gender, weight, 
+    diagnosis, medication, behaviour, dietary_restrictions, medical_notes 
   } = req.body;
 
   try {
@@ -28,8 +28,8 @@ router.post('/', async (req, res) => {
         diagnosis, medication, behaviour, dietary_restrictions, medical_notes
       ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
       [
-        name, species, breed, age, color, gender, weight, 
-        diagnosis, medication, behaviour, dietaryRestrictions, medicalNotes
+        name, species, breed, age, colour, gender, weight, 
+        diagnosis, medication, behaviour, dietary_restrictions, medical_notes
       ]
     );
 
@@ -48,12 +48,30 @@ router.post('/', async (req, res) => {
 router.put('/:id', async (req, res) => {
   const petId = req.params.id;
   
-  
-  const { 
-    name, species, breed, age, color, gender, weight, 
-    diagnosis, medication, behaviour, dietaryRestrictions, medicalNotes
-  } = req.body;
 
+  
+  const petData = req.body.pet_data || req.body;
+const healthData = req.body.health_record_data || req.body;
+
+const {
+  name,
+  species,
+  race,
+  age,
+  colour,
+  gender,
+  weight
+} = petData;
+
+const {
+  diagnosis,
+  medication,
+  behaviour,
+  dietary_restrictions,
+  medical_notes
+} = healthData;
+
+const breed = race;
   
     //changes for medication handling
     const medSource = req.body.medication_data ? req.body.medication_data : req.body;
@@ -69,14 +87,17 @@ router.put('/:id', async (req, res) => {
     } = medSource;
 
   try {
+
+
     const [result] = await pool.query(
+      
       `UPDATE pets SET 
         name = ?, species = ?, race = ?, age = ?, colour = ?, gender = ?, weight = ?, 
         diagnosis = ?, medication = ?, behaviour = ?, dietary_restrictions = ?, medical_notes = ? 
       WHERE pet_id = ?`,
       [
-        name, species, breed, age, color, gender, weight, 
-        diagnosis, medication, behaviour, dietaryRestrictions, medicalNotes, 
+        name, species, breed, age, colour, gender, weight, 
+        diagnosis, medication, behaviour, dietary_restrictions, medical_notes, 
         petId
       ]
     );

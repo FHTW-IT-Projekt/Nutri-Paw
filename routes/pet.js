@@ -41,17 +41,41 @@ router.get('/', async (req, res) => {
 
   try {
     const [rows] = await pool.query(
-      'SELECT pet_id, name, species, age, weight, image_url FROM pets WHERE owner_id = ?',
-      [userId]
-    );
-    res.json(rows.map(p => ({
-      petId: p.pet_id,
-      name: p.name,
-      species: p.species,
-      age: p.age,
-      weight: p.weight,
-      imageUrl: p.image_url || null
-    })));
+  `SELECT
+      pet_id,
+      name,
+      species,
+      race,
+      age,
+      colour,
+      gender,
+      weight,
+      diagnosis,
+      medication,
+      behaviour,
+      dietary_restrictions,
+      medical_notes,
+      image_url
+   FROM pets
+   WHERE owner_id = ?`,
+  [userId]
+);
+   res.json(rows.map(p => ({
+  petId: p.pet_id,
+  name: p.name,
+  species: p.species,
+  breed: p.race,
+  age: p.age,
+  color: p.colour,
+  gender: p.gender,
+  weight: p.weight,
+  diagnosis: p.diagnosis,
+  medication: p.medication,
+  behaviour: p.behaviour,
+  dietaryRestrictions: p.dietary_restrictions,
+  medicalNotes: p.medical_notes,
+  imageUrl: p.image_url || null
+})));
   } catch (error) {
     console.error('Fehler bei der Datenbank Abfrage:', error);
     res.status(500).json({ message: 'Interner Serverfehler' });
@@ -75,8 +99,10 @@ router.get('/:petId', async (req, res) => {
       name: p.name,
       species: p.species,
       breed: p.race,
+      race: p.race,
       age: p.age,
       color: p.colour,
+      colour: p.colour,
       gender: p.gender,
       weight: p.weight,
       imageUrl: p.image_url || null,
@@ -85,7 +111,9 @@ router.get('/:petId', async (req, res) => {
       medication: p.medication,
       behaviour: p.behaviour,
       dietaryRestrictions: p.dietary_restrictions,
-      medicalNotes: p.medical_notes
+      dietary_restrictions: p.dietary_restrictions,
+      medicalNotes: p.medical_notes,
+      medical_notes: p.medical_notes
     });
   } catch (error) {
     console.error('Fehler bei der Datenbank Abfrage:', error);
@@ -95,7 +123,28 @@ router.get('/:petId', async (req, res) => {
 
 // POST /api/pets
 router.post('/', async (req, res) => {
-  const { name, species, age, weight, userId } = req.body;
+  const {  name,
+    species,
+    breed,
+    race,
+    age,
+    color,
+    colour,
+    gender,
+    weight,
+    diagnosis,
+    medication,
+    behaviour,
+    dietaryRestrictions,
+    dietary_restrictions,
+    medicalNotes,
+    medical_notes,
+    userId } = req.body;
+
+    const finalBreed = breed || race || null;
+  const finalColour = color || colour || null;
+  const finalDietary = dietaryRestrictions || dietary_restrictions || null;
+  const finalMedicalNotes = medicalNotes || medical_notes || null;
 
   if (!name || !species || !userId) {
     return res.status(400).json({ message: 'Missing required fields' });
@@ -103,16 +152,50 @@ router.post('/', async (req, res) => {
 
   try {
     const [result] = await pool.query(
-      'INSERT INTO pets (name, species, age, weight, owner_id) VALUES (?, ?, ?, ?, ?)',
-      [name, species, age || null, weight || null, userId]
+      `INSERT INTO pets (
+        name,
+        species,
+        race,
+        age,
+        colour,
+        gender,
+        weight,
+        diagnosis,
+        medication,
+        behaviour,
+        dietary_restrictions,
+        medical_notes,
+        owner_id
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      [name,
+        species,
+        finalBreed,
+        age || null,
+        finalColour,
+        gender || null,
+        weight || null,
+        diagnosis || null,
+        medication || null,
+        behaviour || null,
+        finalDietary,
+        finalMedicalNotes,
+        userId]
     );
 
     res.status(201).json({
       petId: result.insertId,
       name,
       species,
+      breed: finalBreed,
+      color: finalColour,
+      gender,
       age,
       weight,
+      diagnosis,
+      medication,
+      behaviour,
+      dietaryRestrictions: finalDietary,
+      medicalNotes: finalMedicalNotes,
       userId
     });
   } catch (error) {
