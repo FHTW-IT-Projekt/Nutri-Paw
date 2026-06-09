@@ -15,6 +15,8 @@ import { sendReminderEmail } from './utils/mailer.js';
 import reminderRoutes from './routes/reminders.js';
 import pool from './db/db.js';
 import medicalHistoryRoutes from './routes/medicalHistory.js';
+import userDashboardRoutes from './routes/userDashboard.js';
+
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -71,6 +73,8 @@ app.use('/api/petedit', petAccessRoutes);
 app.use('/api/petedit', petEditRoutes);
 app.use('/api/reminders', reminderRoutes);
 app.use('/api/medical-history', medicalHistoryRoutes);
+app.use('/api/user-dashboard', userDashboardRoutes);
+
 
 // Cronjob: Läuft z.B. jede Minute zum Testen ('* * * * *')
 // Später kannst du es auf z.B. stündlich ('0 * * * *') ändern
