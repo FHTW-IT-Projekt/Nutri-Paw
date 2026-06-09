@@ -136,26 +136,30 @@ router.get('/', async (req, res) => {
   if (!userId) {
     return res.status(400).json({ message: 'userId is required' });
   }
+    // select DISTINCT to avoid duplicate rows if a user somehow has multiple access records
 
   try {
     const [rows] = await pool.query(
-  `SELECT
-      pet_id,
-      name,
-      species,
-      race,
-      age,
-      colour,
-      gender,
-      weight,
-      diagnosis,
-      medication,
-      behaviour,
-      dietary_restrictions,
-      medical_notes,
-      image_url
-   FROM pets
-   WHERE owner_id = ?`,
+  `
+  SELECT DISTINCT
+    p.pet_id,
+    p.name,
+    p.species,
+    p.race,
+    p.age,
+    p.colour,
+    p.gender,
+    p.weight,
+    p.diagnosis,
+    p.medication,
+    p.behaviour,
+    p.dietary_restrictions,
+    p.medical_notes,
+    p.image_url
+  FROM pets p
+  LEFT JOIN pet_access pa ON p.pet_id = pa.pet_id
+  WHERE p.owner_id = ? OR pa.user_id = ?
+`,
   [userId]
 );
    res.json(rows.map(p => ({
@@ -175,22 +179,7 @@ router.get('/', async (req, res) => {
   imageUrl: p.image_url || null
 })));
 
-    // select DISTINCT to avoid duplicate rows if a user somehow has multiple access records
-    const [rows] = await pool.query(`
-      SELECT DISTINCT p.pet_id, p.name, p.species, p.age, p.weight, p.image_url 
-      FROM pets p
-      LEFT JOIN pet_access pa ON p.pet_id = pa.pet_id
-      WHERE p.owner_id = ? OR pa.user_id = ?
-    `, [userId, userId]);
 
-    res.json(rows.map(p => ({
-      petId: p.pet_id,
-      name: p.name,
-      species: p.species,
-      age: p.age,
-      weight: p.weight,
-      imageUrl: p.image_url || null
-    })));
   } catch (error) {
     console.error('Fehler bei der Datenbank Abfrage:', error);
     res.status(500).json({ message: 'Interner Serverfehler' });
