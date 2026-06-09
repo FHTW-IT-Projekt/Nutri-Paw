@@ -31,6 +31,104 @@ const upload = multer({
   limits: { fileSize: 5 * 1024 * 1024 }
 });
 
+// GET /api/pets/dashboard?userId=:userId
+router.get('/dashboard', async (req, res) => {
+  const { userId } = req.query;
+
+  if (!userId) {
+    return res.status(400).json({ message: 'userId is required' });
+  }
+
+  try {
+    // get all pets the user owns OR has shared access to
+    const [pets] = await pool.query(`
+      SELECT DISTINCT p.* FROM pets p
+      LEFT JOIN pet_access pa ON p.pet_id = pa.pet_id
+      WHERE p.owner_id = ? OR pa.user_id = ?
+    `, [userId, userId]);
+
+    //build the structured UI data
+    const petsArray = await Promise.all(pets.map(async (pet) => {
+      
+      // --- GET ACCESS ROLES ---
+      // ombine the owner ("Parent") and shared users into one array
+      const [accessRows] = await pool.query(`
+        SELECT u.first_name as username, 'Parent' as role
+        FROM users u WHERE u.user_id = ?
+        UNION
+        SELECT u.first_name as username, 
+               CONCAT(UPPER(SUBSTRING(pa.role, 1, 1)), SUBSTRING(pa.role, 2)) as role
+        FROM pet_access pa
+        JOIN users u ON pa.user_id = u.user_id
+        WHERE pa.pet_id = ?
+      `, [pet.owner_id, pet.pet_id]);
+
+      // --- GET FOOD TASK ---
+      // fetch the last time food was given
+      const [foodEvents] = await pool.query(`
+        SELECT MAX(fed_at) as lastCompletedTime 
+        FROM feeding_events 
+        WHERE pet_id = ? AND (task_id = 'food' OR task_id IS NULL)
+      `, [pet.pet_id]);
+
+      // --- GET MEDICATION TASKS ---
+      // fetch all meds and use a subquery to find the latest medication_event
+      const [meds] = await pool.query(`
+        SELECT m.*, 
+          (SELECT MAX(medicated_at) 
+           FROM medication_events me 
+           WHERE me.pet_id = m.pet_id AND me.task_id = m.medication_id
+          ) as lastCompletedTime
+        FROM medications m
+        WHERE m.pet_id = ?
+      `, [pet.pet_id]);
+
+      // --- BUILD THE TASKS ARRAY ---
+      const tasks = [];
+      
+      //  Add Food Task
+      // using a fallback schedule if you haven't added the DB column yet
+      const foodSchedule = pet.food_schedule_times ? pet.food_schedule_times.split(',').map(s => s.trim()) : ['08:00', '18:00'];
+      
+      tasks.push({
+        taskId: 'food', 
+        name: 'Food',
+        schedule: foodSchedule, 
+        frequency: 'Daily', 
+        lastCompletedTime: foodEvents[0]?.lastCompletedTime || null
+      });
+
+      // add Medication Tasks
+      meds.forEach(med => {
+        tasks.push({
+          taskId: med.medication_id.toString(),
+          name: med.medication_name,
+          schedule: med.schedule_times ? med.schedule_times.split(',').map(s => s.trim()) : [],
+          frequency: med.week_days === 'all' ? 'Daily' : med.week_days,
+          lastCompletedTime: med.lastCompletedTime || null
+        });
+      });
+
+      return {
+        petId: pet.pet_id,
+        name: pet.name,
+        species: pet.species,
+        age: pet.age,
+        weight: pet.weight,
+        imageUrl: pet.image_url || null,
+        tasks: tasks,
+        access: accessRows
+      };
+    }));
+
+    res.json(petsArray);
+
+  } catch (error) {
+    console.error('Error compiling dashboard data:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+});
+
 // GET /api/pets?userId=:userId
 router.get('/', async (req, res) => {
   const { userId } = req.query;
@@ -55,6 +153,34 @@ router.get('/', async (req, res) => {
   } catch (error) {
     console.error('Fehler bei der Datenbank Abfrage:', error);
     res.status(500).json({ message: 'Interner Serverfehler' });
+  }
+});
+
+// POST /api/pets
+router.post('/', async (req, res) => {
+  const { name, species, age, weight, userId } = req.body;
+
+  if (!name || !species || !userId) {
+    return res.status(400).json({ message: 'Missing required fields' });
+  }
+
+  try {
+    const [result] = await pool.query(
+      'INSERT INTO pets (name, species, age, weight, owner_id) VALUES (?, ?, ?, ?, ?)',
+      [name, species, age || null, weight || null, userId]
+    );
+
+    res.status(201).json({
+      petId: result.insertId,
+      name,
+      species,
+      age,
+      weight,
+      userId
+    });
+  } catch (error) {
+    console.error('[POST /api/pets]', error);
+    res.status(500).json({ message: 'Internal server error' });
   }
 });
 
@@ -90,34 +216,6 @@ router.get('/:petId', async (req, res) => {
   } catch (error) {
     console.error('Fehler bei der Datenbank Abfrage:', error);
     res.status(500).json({ message: 'Interner Serverfehler' });
-  }
-});
-
-// POST /api/pets
-router.post('/', async (req, res) => {
-  const { name, species, age, weight, userId } = req.body;
-
-  if (!name || !species || !userId) {
-    return res.status(400).json({ message: 'Missing required fields' });
-  }
-
-  try {
-    const [result] = await pool.query(
-      'INSERT INTO pets (name, species, age, weight, owner_id) VALUES (?, ?, ?, ?, ?)',
-      [name, species, age || null, weight || null, userId]
-    );
-
-    res.status(201).json({
-      petId: result.insertId,
-      name,
-      species,
-      age,
-      weight,
-      userId
-    });
-  } catch (error) {
-    console.error('[POST /api/pets]', error);
-    res.status(500).json({ message: 'Internal server error' });
   }
 });
 
