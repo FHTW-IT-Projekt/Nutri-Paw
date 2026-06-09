@@ -16,6 +16,7 @@ import reminderRoutes from './routes/reminders.js';
 import pool from './db/db.js';
 import medicalHistoryRoutes from './routes/medicalHistory.js';
 import userDashboardRoutes from './routes/userDashboard.js';
+import petUploadsRoutes from './routes/petUploads.js';
 
 
 const app = express();
@@ -68,6 +69,7 @@ app.get('/api/getSampleData', (req, res) => {
 app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/feeding-events', feedingEventsRoutes);
+app.use('/api/pets/:petId/uploads', petUploadsRoutes);
 app.use('/api/pets', petRoutes);
 app.use('/api/petedit', petAccessRoutes);
 app.use('/api/petedit', petEditRoutes);
