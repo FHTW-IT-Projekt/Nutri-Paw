@@ -160,7 +160,7 @@ router.get('/', async (req, res) => {
   LEFT JOIN pet_access pa ON p.pet_id = pa.pet_id
   WHERE p.owner_id = ? OR pa.user_id = ?
 `,
-  [userId]
+  [userId, userId]
 );
    res.json(rows.map(p => ({
   petId: p.pet_id,
