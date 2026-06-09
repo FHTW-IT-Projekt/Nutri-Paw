@@ -138,10 +138,14 @@ router.get('/', async (req, res) => {
   }
 
   try {
-    const [rows] = await pool.query(
-      'SELECT pet_id, name, species, age, weight, image_url FROM pets WHERE owner_id = ?',
-      [userId]
-    );
+    // select DISTINCT to avoid duplicate rows if a user somehow has multiple access records
+    const [rows] = await pool.query(`
+      SELECT DISTINCT p.pet_id, p.name, p.species, p.age, p.weight, p.image_url 
+      FROM pets p
+      LEFT JOIN pet_access pa ON p.pet_id = pa.pet_id
+      WHERE p.owner_id = ? OR pa.user_id = ?
+    `, [userId, userId]);
+
     res.json(rows.map(p => ({
       petId: p.pet_id,
       name: p.name,
