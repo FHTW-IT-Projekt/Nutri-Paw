@@ -174,6 +174,23 @@ router.get('/', async (req, res) => {
   medicalNotes: p.medical_notes,
   imageUrl: p.image_url || null
 })));
+
+    // select DISTINCT to avoid duplicate rows if a user somehow has multiple access records
+    const [rows] = await pool.query(`
+      SELECT DISTINCT p.pet_id, p.name, p.species, p.age, p.weight, p.image_url 
+      FROM pets p
+      LEFT JOIN pet_access pa ON p.pet_id = pa.pet_id
+      WHERE p.owner_id = ? OR pa.user_id = ?
+    `, [userId, userId]);
+
+    res.json(rows.map(p => ({
+      petId: p.pet_id,
+      name: p.name,
+      species: p.species,
+      age: p.age,
+      weight: p.weight,
+      imageUrl: p.image_url || null
+    })));
   } catch (error) {
     console.error('Fehler bei der Datenbank Abfrage:', error);
     res.status(500).json({ message: 'Interner Serverfehler' });
