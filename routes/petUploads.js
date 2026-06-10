@@ -4,6 +4,7 @@ import path from 'path';
 import { mkdirSync, existsSync, unlinkSync } from 'fs';
 import pool from '../db/db.js';
 
+
 const router = express.Router({ mergeParams: true });
 
 const storage = multer.diskStorage({
@@ -134,6 +135,44 @@ router.post('/', (req, res) => {
       res.status(500).json({ message: 'Internal server error' });
     }
   });
+});
+
+
+router.delete('/:uploadId', async (req, res) => {
+  const { petId, uploadId } = req.params;
+
+  try {
+    const [[upload]] = await pool.query(
+      `SELECT file_url
+       FROM pet_uploads
+       WHERE pet_id = ? AND upload_id = ?`,
+      [petId, uploadId]
+    );
+
+    if (!upload) {
+      return res.status(404).json({ message: 'Upload not found' });
+    }
+
+    const filePath = path.resolve(
+      process.cwd(),
+      upload.file_url.replace(/^\//, '')
+    );
+
+    await pool.query(
+      `DELETE FROM pet_uploads
+       WHERE pet_id = ? AND upload_id = ?`,
+      [petId, uploadId]
+    );
+
+    if (existsSync(filePath)) {
+      unlinkSync(filePath);
+    }
+
+    return res.json({ message: 'Upload deleted' });
+  } catch (error) {
+    console.error('[DELETE /api/pets/:petId/uploads/:uploadId]', error);
+    return res.status(500).json({ message: 'Internal server error' });
+  }
 });
 
 export default router;
