@@ -1,6 +1,9 @@
 import 'dotenv/config';
 import express from 'express';
 import cors from 'cors';
+//einbinden der "Router-Dateien"
+import petRoutes from './routes/pet.js';
+import userPetsRouter from "./routes/user.js";
 import cookieParser from 'cookie-parser';
 import cron from 'node-cron';
 
@@ -67,6 +70,7 @@ app.get('/api/getSampleData', (req, res) => {
 
 // 4. ROUTER EINHÄNGEN
 app.use('/api/auth', authRoutes);
+app.use("/api/users", userPetsRouter); 
 app.use('/api/users', userRoutes);
 app.use('/api/feeding-events', feedingEventsRoutes);
 app.use('/api/pets/:petId/uploads', petUploadsRoutes);
